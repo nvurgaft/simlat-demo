@@ -12,28 +12,50 @@ const app = Vue.createApp({
             maxZoom: 18
         }).addTo(myMap);
 
-        DeviceService.getDevices().then(
-            (devices) => console.log("devices: ", devices),
-            (error) => console.log("error: ", error)
-        );
-
         // get devices data
-        DeviceService.getMockDevices().then(
+        // DeviceService.getMockDevices().then(
+        DeviceService.getDevices().then(
             (devices) => {
-                this.markers = devices.map((device) => {
-                    // Create and add a marker
-                    let marker = new L.Marker(myMap.getCenter())
-                    // Label
-                    marker.bindTooltip(device.name, {
-                        permanent: true,
-                        direction: 'right'
+                let allDevicesIds = devices.map((d) => d.id);
+                DeviceMessagesService.getMessagesForDevices(allDevicesIds).then(
+                    (messages) => {
+                        messages.forEach((message) => {
+                            devices.forEach((device) => {
+                                if (message.deviceId === device.id) {
+                                    switch (message.type) {
+                                        case 'DeviceGlobalPosition':
+                                            device.positionHistory.push(message);
+                                            break;
+                                        case 'DeviceStatus':
+                                            device.statusHistory.push(message);
+                                            break;
+                                        default:
+                                        // Do something maybe ?!
+                                    }
+                                }
+                            });
+                        });
+
+                        // Add device marker to map
+                        this.markers = devices.map((device) => {
+                            // Create
+                            let marker = new L.Marker(myMap.getCenter())
+                            // Label
+                            marker.bindTooltip(device.name, {
+                                permanent: true,
+                                direction: 'right'
+                            });
+                            // Set marker location - takes [latitude, longitude]
+                            let ls = device.getLatestCoordinates();
+                            marker.setLatLng([ls.lat, ls.lon]);
+                            marker.addTo(myMap);
+                            marker.on('click', e => vm.showDeviceStatus(device));
+                            // Add
+                            return marker;
+                        });
                     });
-                    // Set marker location - takes [latitude, longitude]
-                    marker.setLatLng(device.getCoordinates());
-                    marker.addTo(myMap);
-                    marker.on('click', e => vm.showDeviceStatus(device));
-                    return marker;
-                })
+
+
             },
             (error) => {
                 console.error("Failed fetching devices: ", error);
@@ -53,8 +75,8 @@ const app = Vue.createApp({
     methods: {
         showDeviceStatus(device) {
             this.title = device.name;
-            this.position = device.globalPosition
-            this.status = device.deviceStatus;
+            this.position = device.getLatestCoordinates();
+            this.status = device.getLatestStatus();
         }
     }
 });
@@ -69,8 +91,8 @@ app.component('app-sidebar', {
                 Device Position
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">{{position.lat}}</li>
-                <li class="list-group-item">{{position.lon}}</li>
+                <li class="list-group-item">Latitude: {{position.lat}}</li>
+                <li class="list-group-item">Longitude: {{position.lon}}</li>
             </ul>
         </div>
 
@@ -79,8 +101,8 @@ app.component('app-sidebar', {
                 Device Status
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">{{status.estimatedRemainingTime}}</li>
-                <li class="list-group-item">{{status.batteryPercentage}}</li>
+                <li class="list-group-item">Estimated remaining time: {{status.estimatedRemainingTime}} seconds</li>
+                <li class="list-group-item">Battery: {{status.batteryPercentage}}%</li>
             </ul>
         </div>
     `

@@ -10,10 +10,9 @@ import com.nvurgaft.simlatdemo.models.DeviceMessage;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +32,14 @@ public class DeviceMessageController {
     @Autowired
     private DeviceMessageService deviceMessageService;
 
-    @GET
-    @Path("get-for-device")
+    @POST
+    @Path("get-for-devices")
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     public List<DeviceMessage> getAllMessages(
-            @QueryParam("id") @NotNull(message="device id cannot be null") UUID deviceId) {
+            @NotNull(message="device id cannot be null") List<UUID> deviceIds) {
 
-        List<DeviceMessage> deviceMessages = deviceMessageService.getMessagesForDevice(deviceId);
+        List<DeviceMessage> deviceMessages = deviceMessageService.getMessagesForDevices(deviceIds);
         return deviceMessages;
     }
+    
 }

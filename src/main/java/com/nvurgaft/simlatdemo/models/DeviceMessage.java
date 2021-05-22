@@ -5,8 +5,14 @@
  */
 package com.nvurgaft.simlatdemo.models;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -33,6 +39,7 @@ public class DeviceMessage implements Serializable {
             this.value = value;
         }
 
+        @JsonValue
         public String getValue() {
             return value;
         }
@@ -95,6 +102,12 @@ public class DeviceMessage implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Map<String, Object> getProcessedData(ObjectMapper objectMapper) throws JsonProcessingException {
+        return objectMapper.readValue(this.message,
+                new TypeReference<HashMap<String, Object>>() {
+        });
     }
 
     @Override
