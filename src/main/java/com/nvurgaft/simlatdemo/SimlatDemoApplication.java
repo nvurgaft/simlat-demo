@@ -70,7 +70,7 @@ public class SimlatDemoApplication implements CommandLineRunner {
                 Map<String, Object> statusData = new HashMap<>();
                 statusData.put("timestamp", 60 * 60 * 1000);
                 statusData.put("estimatedRemainingTime", 78 * 60);
-                statusData.put("batteryPercentage", 64);
+                statusData.put("batteryPercentage", (int) (Math.random() * 100));
                 statusJson.put("data", statusData);
                 statusMessage.setMessage(objectMapper.writeValueAsString(statusJson));
                 messages.add(statusMessage);
@@ -85,9 +85,10 @@ public class SimlatDemoApplication implements CommandLineRunner {
                 positionJson.put("id", _id);
                 Map<String, Object> positionData = new HashMap<>();
                 positionData.put("timestamp", 60 * 60 * 1000);
-                positionData.put("lat", 40.36 + (Math.random()/100));
-                positionData.put("lon", -111.90 + (Math.random()/100));
+                positionData.put("lat", 40.36 + (Math.random() / 100));
+                positionData.put("lon", -111.90 + (Math.random() / 100));
                 positionData.put("alt", 0);
+                positionData.put("heading", (Math.random() % 18) * 100);
                 positionJson.put("data", positionData);
                 positionMessage.setMessage(objectMapper.writeValueAsString(positionJson));
                 messages.add(positionMessage);

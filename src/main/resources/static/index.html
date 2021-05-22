@@ -19,9 +19,34 @@
 </head>
 
 <body>
-    <!-- <app-nav></app-nav> -->
-    <div id="app">
+    <!-- Templates  -->
+    <script type="text/html" id="app-sidebar-template">
+        <h3>{{title}}</h3>
+        <hr />
+        <div class="card mb-2" v-if="position">
+            <div class="card-header">
+                Device Position
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Latitude: {{position.lat}}</li>
+                <li class="list-group-item">Longitude: {{position.lon}}</li>
+            </ul>
+        </div>
 
+        <div class="card mb-2" v-if="status">
+            <div class="card-header">
+                Device Status
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Est. remaining time: {{ remainingTimeMinutes }}
+                    minutes</li>
+                 <li class="list-group-item">Battery: {{status.batteryPercentage}}%</li>
+            </ul>
+        </div>
+      </script>
+
+    <!-- App Body -->
+    <div id="app">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-2">

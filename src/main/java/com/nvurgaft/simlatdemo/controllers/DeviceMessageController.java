@@ -14,6 +14,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,19 @@ public class DeviceMessageController {
     @POST
     @Path("get-for-devices")
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-    public List<DeviceMessage> getAllMessages(
-            @NotNull(message="device id cannot be null") List<UUID> deviceIds) {
+    public Response getAllMessages(
+            @NotNull(message = "device id cannot be null") List<UUID> deviceIds) {
+        try {
+            List<DeviceMessage> deviceMessages = deviceMessageService.getMessagesForDevices(deviceIds);
+            return Response.ok(deviceMessages)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        } catch (Throwable ex) {
+            return Response.serverError()
+                    .entity("something went wrong")
+                    .type(MediaType.TEXT_PLAIN).build();
+        }
 
-        List<DeviceMessage> deviceMessages = deviceMessageService.getMessagesForDevices(deviceIds);
-        return deviceMessages;
     }
-    
+
 }
