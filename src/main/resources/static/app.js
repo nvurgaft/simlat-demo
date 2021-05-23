@@ -100,9 +100,9 @@ const app = Vue.createApp({
         }
     },
     methods: {
-        toggleNavbar(event) {
-            this.navToggled = !this.navToggled;
-        },
+        // toggleNavbar(event) {
+        //     this.navToggled = !this.navToggled;
+        // },
         setModalOpen(show, event) {
             console.debug("event: ", event);
             event && event.preventDefault();

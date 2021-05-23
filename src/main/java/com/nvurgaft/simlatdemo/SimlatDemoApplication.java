@@ -38,9 +38,21 @@ public class SimlatDemoApplication implements CommandLineRunner {
     @Autowired
     private DeviceMessageService deviceMessageService;
 
+    /**
+     * This segment creates mock data for the UI to display.
+     * In a real world application real data would come from real devices 
+     * writing stuff to the database.
+     * 
+     * @param args
+     * @throws Exception 
+     */
     @Override
     public void run(String... args) throws Exception {
-        logger.info("Generating mock data");
+        logger.info("Truncating tables");
+        deviceMessageService.deleteAll();
+        deviceService.deleteAll();
+        
+        logger.info("Generating new mock data");
 
         Device device1 = new Device();
         device1.setName("Ludwig");
@@ -85,8 +97,8 @@ public class SimlatDemoApplication implements CommandLineRunner {
                 positionJson.put("id", _id);
                 Map<String, Object> positionData = new HashMap<>();
                 positionData.put("timestamp", 60 * 60 * 1000);
-                positionData.put("lat", 40.36 + (Math.random() / 100));
-                positionData.put("lon", -111.90 + (Math.random() / 100));
+                positionData.put("lat", 40.36 + (Math.random() / 20));
+                positionData.put("lon", -111.90 + (Math.random() / 20));
                 positionData.put("alt", 0);
                 positionData.put("heading", (Math.random() % 18) * 100);
                 positionJson.put("data", positionData);
